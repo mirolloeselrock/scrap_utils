@@ -8,10 +8,12 @@ El script *comp.py* sirve para comprimir los archivos mp4 que se encuentran en e
 - Seleccionar si se quiere con audio o no. Si se quiere con audio, mezcla las dos canales resultando un vídeo con audio monoaural.
 - Elegir la calidad resultante de los vídeos.
 - Seleccionar el preset, muy útil para hacer pruebas rápidas.
+Además, este script es compatible con los sistemas operativos Windows y Linux.
 
 ### ¿Qué necesitamos?
 - FFmpeg que podéis encontrar en su página web: https://www.ffmpeg.org/
-- Python. Se ha utilizado la versión 2.7.10 para probarlo. Se puede descargar aquí: https://www.python.org/
+- Python 2.7. Se ha utilizado la versión 2.7.10 para probarlo. **ATENCIÓN: No funciona con python 3.X**. Se puede descargar aquí: https://www.python.org/
+- Necesitas meter el path de python en la variable del sistema Path. En linux normalmente no hace falta, ya que al instalar python se hace de manera automática. En windows hay que hacerlo a mano. Para ello, ve a propiedades del sistema -> opciones avanzadas -> Variables de entorno. En la sección variables del sistema busca Path y edítala añadiendo el path donde has instalado python.
 
 ### ¿Cómo se configura?
 El archivo *comp.cfg* sirve para configurarlo. Los valores válidos están indicados dentro de ese mismo archivo.
@@ -19,7 +21,8 @@ El archivo *comp.cfg* sirve para configurarlo. Los valores válidos están indic
 ### ¿Cómo lo hago funcionar?
 Copia el script y pégalo en la carpeta donde están los vídeos. Ejecútalo, para ello tienes varias opciones:
 - lanza desde la consola de comandos: *python comp.py*
-- haz doble click sobre *comp.py*
+- haz doble click sobre *comp.py*. Si usas linux tendrías que darle permiso de ejecución al archivo y decirle el intérprete que quieres usar, para eso tendrías que añadir al principio del script esta línea:
+#!/usr/bin/python
 
 El tiempo de ejecución del script depende del nº de vídeos a comprimir, de la configuración y del propio sistema. Recomendable ejecutarlo en un pc, nunca en la raspberry.
 Una vez finalizado el script, tendremos los vídeos comprimidos con la extensión mp4. Los vídeos originales se renombran, añadiendo la extensión .bak.
