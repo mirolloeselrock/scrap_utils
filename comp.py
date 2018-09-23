@@ -7,7 +7,7 @@ def getLength(ffmpeg_path, input_video):
     process = subprocess.Popen(ffmpeg_path + " " + "-i " + '"' + input_video + '"', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
     stdout, stderr = process.communicate()
     matches = re.search(r"Duration:\s{1}(?P<hours>\d+?):(?P<minutes>\d+?):(?P<seconds>\d+\.\d+?),", stdout, re.DOTALL).groupdict()
-    return float(matches['seconds']) + 60 * float(matches['minutes']) + 3600 * float(matches['minutes'])
+    return float(matches['seconds']) + 60 * float(matches['minutes']) + 3600 * float(matches['hours'])
 
 def compressFiles():
     config = ConfigParser.RawConfigParser()   
@@ -25,11 +25,11 @@ def compressFiles():
     soundStr = "-ac 1 " if SONIDO.lower() in ['true', '1', 'y', 'yes', 's', 'si'] else "-an"
     for file in onlyfiles:
         if file[-3:] == "mp4":
-            length = getLength(FFMPEG_PATH, file)
-            if length > DURACION_MAXIMA:
-                length = DURACION_MAXIMA
+            length = getLength(FFMPEG_PATH, file) - DURACION_MAXIMA
+            if length < 0:
+                length = 0
             os.rename(file, file + ".bak")
-            input = '-sseof -{0} -i "./{1}.bak" -profile:v high -level 3.1 -vcodec libx264 -crf {2} -vf "format=yuv420p,scale={3}:{4}:force_original_aspect_ratio=decrease,pad={3}:{4}:(ow-iw)/2:(oh-ih)/2,setsar=1" {5} -preset {6} -threads {7} "./{8}"'.format(length, file, FFMPEG_CRF, RESOLUCION_ANCHO, RESOLUCION_ALTO, soundStr, FFMPEG_PRESET, FFMPEG_HILOS, file)
+            input = '-i "./{1}.bak" -ss {0} -profile:v high -level 3.1 -vcodec libx264 -crf {2} -vf "format=yuv420p,scale={3}:{4}:force_original_aspect_ratio=decrease,pad={3}:{4}:(ow-iw)/2:(oh-ih)/2,setsar=1" {5} -preset {6} -threads {7} "./{8}"'.format(length, file, FFMPEG_CRF, RESOLUCION_ANCHO, RESOLUCION_ALTO, soundStr, FFMPEG_PRESET, FFMPEG_HILOS, file)
             cmd = FFMPEG_PATH + " " + input     
             p = subprocess.Popen(cmd, shell=True)
             p.wait()
