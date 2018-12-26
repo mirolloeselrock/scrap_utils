@@ -20,16 +20,18 @@ def compressFiles():
     RESOLUCION_ALTO = config.get("CONFIG", "RESOLUCION_ALTO")
     DURACION_MAXIMA = int(config.get("CONFIG", "DURACION_MAXIMA"))
     SONIDO = config.get("CONFIG", "SONIDO")
+    ULTIMOS = config.get("CONFIG", "ULTIMOS")
     mypath = "./"
     onlyfiles = [f for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
     soundStr = "-ac 1 " if SONIDO.lower() in ['true', '1', 'y', 'yes', 's', 'si'] else "-an"
+    ultimosStr = "-ss" if ULTIMOS.lower() in ['true', '1', 'y', 'yes', 's', 'si'] else "-t"
     for file in onlyfiles:
         if file[-3:] == "mp4":
             length = getLength(FFMPEG_PATH, file) - DURACION_MAXIMA
             if length < 0:
                 length = 0
             os.rename(file, file + ".bak")
-            input = '-i "./{1}.bak" -ss {0} -profile:v high -level 3.1 -vcodec libx264 -crf {2} -vf "format=yuv420p,scale={3}:{4}:force_original_aspect_ratio=decrease,pad={3}:{4}:(ow-iw)/2:(oh-ih)/2,setsar=1" {5} -preset {6} -threads {7} "./{8}"'.format(length, file, FFMPEG_CRF, RESOLUCION_ANCHO, RESOLUCION_ALTO, soundStr, FFMPEG_PRESET, FFMPEG_HILOS, file)
+            input = '-i "./{1}.bak" {9} {0} -profile:v high -level 3.1 -vcodec libx264 -crf {2} -vf "format=yuv420p,scale={3}:{4}:force_original_aspect_ratio=decrease,pad={3}:{4}:(ow-iw)/2:(oh-ih)/2,setsar=1" {5} -preset {6} -threads {7} "./{8}"'.format(length, file, FFMPEG_CRF, RESOLUCION_ANCHO, RESOLUCION_ALTO, soundStr, FFMPEG_PRESET, FFMPEG_HILOS, file, ultimosStr)
             cmd = FFMPEG_PATH + " " + input     
             p = subprocess.Popen(cmd, shell=True)
             p.wait()
